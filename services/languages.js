@@ -20,25 +20,29 @@ async function getMultiple(page = 1){
 
 module.exports = {
     getMultiple,
+    create
 };
 
 
-async function getUser(page = 1){
-    const offset = helper.getOffset(page, config.listPerPage);
-    const rows = await db.query(
-        `SELECT id, username, password, email, role
-        FROM users LIMIT ${offset}, ${config.listPerPage}
+async function create(language){
+    console.log(`INSERT INTO languages
+    (name, description, year)
+    VALUES
+    ('${language.name}','${lnguage.description}',${language.year})
+    `);
+    const result = await db.query(
+        `ISERT INTO languages (name,decription,year) VALUES
+        ('${language.name}','${lnguage.description}','${language.year}')
         `
-    );
-    const data = helper.emptyOrRows(rows);
-    const meta = (page);
-
-    return {
-        data,
-        meta
-    }
+    ); 
+    let message = "Error in creating programming lnguage";
+    if (result.affectedRows) {
+        message = "A new language has been added!";
+    }   
+    return{message}
 }
 
 module.exports = {
-    getUser, 
+    getMultiple,
+    create 
 };
