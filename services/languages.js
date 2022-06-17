@@ -1,48 +1,79 @@
-const db = require('./db');
+onst db = require('./db');
 const helper = require('../helper');
 const config = require('../config');
 
 async function getMultiple(page = 1){
     const offset = helper.getOffset(page, config.listPerPage);
     const rows = await db.query(
-        `SELECT id, name, description, year 
+        `SELECT id, name,description,year
         FROM languages LIMIT ${offset}, ${config.listPerPage}
         `
     );
     const data = helper.emptyOrRows(rows);
-    const meta = (page);
+    const meta = {page};
 
     return {
-        data,
+        data, 
         meta
     }
+
 }
-
-module.exports = {
-    getMultiple,
-    create
-};
-
 
 async function create(language){
-    console.log(`INSERT INTO languages
-    (name, description, year)
-    VALUES
-    ('${language.name}','${lnguage.description}',${language.year})
-    `);
+     console.log(`INSERT INTO languages
+     (name, description, year)
+     VALUES
+     ('${language.name}', '${language.description}', ${language.year})
+     `);
+
     const result = await db.query(
-        `ISERT INTO languages (name,decription,year) VALUES
-        ('${language.name}','${lnguage.description}','${language.year}')
-        `
-    ); 
-    let message = "Error in creating programming lnguage";
-    if (result.affectedRows) {
+        `INSERT INTO languages (name, description, year) VALUES
+        ('${language.name}', '${language.description}', ${language.year})`
+    );
+
+    let message = "Error in creating programming language";
+    if (result.affectedRows){
         message = "A new language has been added!";
-    }   
-    return{message}
+    }
+
+    return {message}
 }
+
+async function update(id,language){
+   const result = await db.query(
+       `UPDATE languages 
+       SET 
+       name = '${language.name}', 
+       description = '${language.description}', 
+       year = ${language.year}
+       WHERE id= ${id}
+       `
+   );
+
+   let message = "Error in update a programming language";
+   if (result.affectedRows){
+       message = "A language has been updated!";
+   }
+
+   return {message}
+}
+
+async function remove(id){
+    const result = await db.query(
+        `DELETE FROM languages WHERE id= ${id}`
+    );
+ 
+    let message = "Error in delete a programming language";
+    if (result.affectedRows){
+        message = "A language has been deleted!";
+    }
+ 
+    return {message}
+ }
 
 module.exports = {
     getMultiple,
-    create 
-};
+    create,
+    update,
+    remove
+}
